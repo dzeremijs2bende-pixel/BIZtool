@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biznesa Novērtējums — Marketworks</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #08080d;
+      --surface: #0e0e16;
+      --surface2: #14141f;
+      --border: rgba(138,92,246,0.18);
+      --purple: #7C3AED;
+      --purple-light: #A78BFA;
+      --purple-bright: #8B5CF6;
+      --purple-dim: rgba(124,58,237,0.10);
+      --text: #F8F8FF;
+      --text-muted: #9090A8;
+      --danger: #F87171;
+      --success: #6EE7B7;
+    }
+    html, body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: -20%; left: 50%;
+      transform: translateX(-50%);
+      width: 70vw; height: 55vh;
+      background: radial-gradient(ellipse, rgba(124,58,237,0.08) 0%, transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+    #app {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 2rem 1rem;
+    }
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem; color: var(--purple-light);
+      letter-spacing: 0.2em; text-transform: uppercase;
+      margin-bottom: 2.5rem;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px; padding: 2.5rem;
+      width: 100%; max-width: 600px;
+      animation: fadeUp 0.35s ease forwards;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .step-label {
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--purple-light); margin-bottom: 0.6rem;
+    }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 4vw, 2.1rem);
+      font-weight: 600; line-height: 1.25;
+      margin-bottom: 0.75rem; color: var(--text);
+    }
+    .subtitle {
+      color: var(--text-muted); font-size: 0.9rem;
+      line-height: 1.65; margin-bottom: 1.5rem;
+    }
+    .progress-wrap {
+      display: flex; align-items: center;
+      gap: 0.6rem; margin-bottom: 2rem;
+    }
+    .progress-bar-bg {
+      flex: 1; height: 3px;
+      background: var(--surface2); border-radius: 99px; overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--purple), var(--purple-light));
+      border-radius: 99px; transition: width 0.4s ease;
+    }
+    .progress-text { font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; }
+    .path-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1rem; margin-bottom: 1.5rem;
+    }
+    @media (max-width: 460px) { .path-grid { grid-template-columns: 1fr; } }
+    .path-card {
+      border: 1px solid var(--border); border-radius: 13px;
+      padding: 1.4rem 1.2rem; cursor: pointer;
+      background: var(--surface2); transition: all 0.2s; text-align: left;
+    }
+    .path-card:hover, .path-card.selected {
+      border-color: var(--purple-bright);
+      background: var(--purple-dim);
+    }
+    .path-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .path-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem;
+      color: var(--text);
+    }
+    .path-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+    .question-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; font-weight: 600;
+      margin-bottom: 1.2rem; line-height: 1.4; color: var(--text);
+    }
+    input[type="text"], input[type="email"], textarea {
+      width: 100%; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.9rem 1rem; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 0.92rem;
+      outline: none; transition: border-color 0.2s; resize: none;
+    }
+    input[type="text"]:focus, input[type="email"]:focus, textarea:focus {
+      border-color: var(--purple-bright);
+    }
+    textarea { min-height: 115px; }
+    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    @media (max-width: 400px) { .options-grid { grid-template-columns: 1fr; } }
+    .opt-btn {
+      border: 1px solid var(--border); border-radius: 9px;
+      padding: 0.75rem 0.9rem; background: var(--surface2);
+      color: var(--text); font-family: 'DM Sans', sans-serif;
+      font-size: 0.83rem; cursor: pointer; transition: all 0.18s; text-align: left;
+    }
+    .opt-btn:hover, .opt-btn.selected {
+      border-color: var(--purple-bright);
+      background: var(--purple-dim);
+      color: var(--purple-light);
+    }
+    .btn {
+      display: flex; align-items: center; justify-content: center;
+      padding: 0.85rem 1.5rem; border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+      font-weight: 600; cursor: pointer; border: none;
+      transition: all 0.2s; width: 100%;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--purple), var(--purple-bright));
+      color: #fff;
+    }
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+    .btn-ghost {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-muted); margin-top: 0.7rem;
+    }
+    .btn-ghost:hover { border-color: var(--text-muted); color: var(--text); }
+    .btn-row { display: flex; flex-direction: column; margin-top: 1.5rem; }
+    .err { color: var(--danger); font-size: 0.78rem; margin-top: 0.4rem; display: none; }
+    .err.show { display: block; }
+    .loading-wrap { text-align: center; padding: 2rem 0; }
+    .spinner {
+      width: 50px; height: 50px;
+      border: 3px solid var(--border);
+      border-top-color: var(--purple-bright);
+      border-radius: 50%; margin: 0 auto 1.5rem;
+      animation: spin 0.85s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.5rem; }
+    .loading-sub { color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; }
+    .score-wrap { text-align: center; padding: 1rem 0 1.75rem; }
+    .score-ring-wrap { position: relative; width: 136px; height: 136px; margin: 0 auto 0.9rem; }
+    .score-ring { width: 136px; height: 136px; transform: rotate(-90deg); }
+    .score-ring-bg { fill: none; stroke: var(--surface2); stroke-width: 8; }
+    .score-ring-fill {
+      fill: none; stroke: url(#purpleGrad); stroke-width: 8;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    .score-number {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      font-family: 'Playfair Display', serif;
+      font-size: 2.3rem; font-weight: 700; color: var(--purple-light);
+    }
+    .score-sub {
+      font-size: 0.72rem; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--text-muted);
+    }
+    .score-verdict {
+      display: inline-block; margin-top: 0.6rem;
+      padding: 0.28rem 0.9rem; border-radius: 99px;
+      font-size: 0.74rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .verdict-high { background: rgba(110,231,183,0.12); color: var(--success); }
+    .verdict-mid  { background: rgba(167,139,250,0.15); color: var(--purple-light); }
+    .verdict-low  { background: rgba(248,113,113,0.12); color: var(--danger); }
+    .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+    .section-label {
+      font-size: 0.67rem; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 0.9rem;
+    }
+    .insight-card {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.2rem; margin-bottom: 0.7rem;
+    }
+    .insight-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.45rem; }
+    .insight-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--purple-dim); border: 1px solid var(--purple-bright);
+      color: var(--purple-light); font-size: 0.68rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .insight-name { font-weight: 600; font-size: 0.88rem; color: var(--text); }
+    .insight-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0.55rem; }
+    .insight-step {
+      font-size: 0.78rem; color: var(--purple-light);
+      display: flex; align-items: flex-start; gap: 0.35rem;
+    }
+    .insight-step::before { content: '→'; flex-shrink: 0; }
+    .rec-card {
+      background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(124,58,237,0.04));
+      border: 1px solid rgba(124,58,237,0.35);
+      border-radius: 14px; padding: 1.5rem; margin-top: 1.2rem;
+    }
+    .rec-label {
+      font-size: 0.67rem; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--purple-light); margin-bottom: 0.55rem;
+    }
+    .rec-text { font-size: 0.87rem; line-height: 1.65; color: var(--text); margin-bottom: 1.2rem; }
+    .rec-cta {
+      display: block; text-align: center; padding: 0.9rem;
+      background: linear-gradient(135deg, var(--purple), var(--purple-bright));
+      color: #fff; font-weight: 700; font-size: 0.88rem;
+      border-radius: 9px; text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .rec-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+    .email-icon { font-size: 2.2rem; display: block; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="logo">Marketworks</div>
+  <div id="screen" class="card"></div>
+</div>
+
+<script>
+const API_URL = "https://api.anthropic.com/v1/messages";
+const state = { path: null, step: 0, answers: {}, email: '' };
+
+const QUESTIONS = {
+  entrepreneur: [
+    { key:'idea',        type:'textarea', question:'Apraksti savu biznesa ideju',                         placeholder:'Ko tu vēlies radīt, kādu problēmu risināt...' },
+    { key:'audience',    type:'text',     question:'Kas ir tava mērķauditorija?',                         placeholder:'Piemēram: 25–40 g.v. uzņēmēji Latvijā...' },
+    { key:'tested',      type:'options',  question:'Vai esi testējis ideju ar potenciālajiem klientiem?', options:['Jā, ir reāla atsauksme','Daļēji — dažas sarunas','Nē, vēl ne','Man ir gaidošo saraksts'] },
+    { key:'competitors', type:'text',     question:'Kādi ir galvenie konkurenti vai alternatīvas?',       placeholder:'Nosaukumi vai "nezinu" — godīgi ir labi' },
+    { key:'budget',      type:'options',  question:'Kāds ir tavs palaišanas budžets?',                    options:['Līdz €1 000','€1 000 – €5 000','€5 000 – €20 000','€20 000+'] },
+  ],
+  company: [
+    { key:'business',  type:'textarea', question:'Apraksti savu uzņēmumu un nozari',           placeholder:'Ko dari, cik ilgi darbojas, galvenie produkti/pakalpojumi...' },
+    { key:'barriers',  type:'textarea', question:'Kādi ir tavi lielākie izaugsmes šķēršļi?',  placeholder:'Tirgus piesātinājums, klientu piesaiste, resursi...' },
+    { key:'markets',   type:'text',     question:'Kādos tirgos tu pašlaik darbojas?',          placeholder:'Latvija, Baltija, ES...' },
+    { key:'expansion', type:'options',  question:'Vai esi mēģinājis paplašināties?',           options:['Jā — ar panākumiem','Jā — neveiksmīgi','Plānojam drīzumā','Vēl neesam mēģinājuši'] },
+    { key:'revenue',   type:'options',  question:'Uzņēmuma gada apgrozījums',                  options:['Līdz €50 000','€50 000 – €200 000','€200 000 – €1 M','€1 M+'] },
+  ],
+};
+
+function set(html) {
+  const s = document.getElementById('screen');
+  s.innerHTML = html;
+  s.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function renderIntro() {
+  set(`
+    <div class="step-label">Bezmaksas novērtējums</div>
+    <h1>Uzzini, kur tu stāvi</h1>
+    <p class="subtitle">Atbildi uz 5 jautājumiem un saņem personalizētu AI analīzi — novērtējums 1–100, 3 galvenie ieskati un konkrēts nākamais solis. Aizņem ~3 minūtes.</p>
+    <div class="step-label" style="margin-bottom:0.75rem">Es esmu…</div>
+    <div class="path-grid">
+      <div class="path-card ${state.path==='entrepreneur'?'selected':''}" onclick="selectPath('entrepreneur')">
+        <div class="path-icon">💡</div>
+        <div class="path-title">Uzņēmējs</div>
+        <div class="path-desc">Man ir biznesa ideja, ko gribu validēt</div>
+      </div>
+      <div class="path-card ${state.path==='company'?'selected':''}" onclick="selectPath('company')">
+        <div class="path-icon">📈</div>
+        <div class="path-title">Uzņēmums</div>
+        <div class="path-desc">Man ir esošs bizness un gribu augt</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="startQuiz()" ${!state.path?'disabled':''}>Sākt novērtējumu →</button>
+    </div>
+  `);
+}
+
+function selectPath(p) { state.path = p; renderIntro(); }
+
+function startQuiz() {
+  if (!state.path) return;
+  state.step = 0; state.answers = {};
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const qs = QUESTIONS[state.path];
+  const q = qs[state.step];
+  const total = qs.length;
+  const pct = Math.round((state.step / total) * 100);
+  const val = state.answers[q.key] || '';
+
+  let inputHtml = '';
+  if (q.type === 'textarea') {
+    inputHtml = `<textarea id="ans" placeholder="${q.placeholder}" oninput="saveAns(this.value)">${val}</textarea>`;
+  } else if (q.type === 'text') {
+    inputHtml = `<input type="text" id="ans" placeholder="${q.placeholder}" value="${val}" oninput="saveAns(this.value)" onkeydown="if(event.key==='Enter')nextStep()" />`;
+  } else {
+    inputHtml = `<div class="options-grid">${q.options.map(o =>
+      `<button class="opt-btn ${val===o?'selected':''}" onclick="pickOpt('${o.replace(/'/g,"\\'")}')">${o}</button>`
+    ).join('')}</div>`;
+  }
+
+  set(`
+    <div class="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+      <div class="progress-text">${state.step+1} / ${total}</div>
+    </div>
+    <div class="step-label">Jautājums ${state.step+1}</div>
+    <div class="question-title">${q.question}</div>
+    ${inputHtml}
+    <div class="err" id="err">Lūdzu atbildi uz šo jautājumu</div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="nextStep()">${state.step < total-1 ? 'Turpināt →' : 'Uz rezultātiem →'}</button>
+      <button class="btn btn-ghost" onclick="${state.step===0?'renderIntro':'prevStep'}()">← Atpakaļ</button>
+    </div>
+  `);
+}
+
+function saveAns(v) { state.answers[QUESTIONS[state.path][state.step].key] = v.trim(); }
+function pickOpt(v) { state.answers[QUESTIONS[state.path][state.step].key] = v; renderQuestion(); }
+
+function nextStep() {
+  const q = QUESTIONS[state.path][state.step];
+  if (!state.answers[q.key]) { document.getElementById('err').classList.add('show'); return; }
+  if (state.step < QUESTIONS[state.path].length - 1) { state.step++; renderQuestion(); }
+  else renderEmail();
+}
+
+function prevStep() { if (state.step > 0) { state.step--; renderQuestion(); } }
+
+function renderEmail() {
+  set(`
+    <span class="email-icon">📬</span>
+    <div class="step-label">Gandrīz gatavs</div>
+    <h1>Kur sūtīt rezultātus?</h1>
+    <p class="subtitle">Ievadi savu e-pastu, lai saņemtu analīzi. Tava atskaite tiks sagatavota tieši šeit — nekavējoties.</p>
+    <input type="email" id="emailInput" placeholder="tavs@emails.lv" value="${state.email}"
+      oninput="state.email=this.value.trim()"
+      onkeydown="if(event.key==='Enter')submitEmail()" />
+    <div class="err" id="emailErr">Lūdzu ievadi derīgu e-pastu</div>
+    <div class="btn-row" style="margin-top:1.25rem">
+      <button class="btn btn-primary" onclick="submitEmail()">Saņemt bezmaksas analīzi →</button>
+      <button class="btn btn-ghost" onclick="prevStep()">← Atpakaļ</button>
+    </div>
+    <p style="margin-top:1rem;font-size:0.72rem;color:var(--text-muted);text-align:center">
+      Nekāda surogātpasta. Tikai svarīga informācija no Marketworks.
+    </p>
+  `);
+}
+
+function submitEmail() {
+  const e = state.email;
+  if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
+    document.getElementById('emailErr').classList.add('show'); return;
+  }
+  renderLoading();
+  callAPI();
+}
+
+function renderLoading() {
+  set(`
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <div class="loading-title">Analizējam tavu situāciju…</div>
+      <p class="loading-sub">Mūsu AI izvērtē datus un sagatavo personalizētu pārskatu.<br>Tas aizņem aptuveni 15 sekundes.</p>
+    </div>
+  `);
+}
+
+async function callAPI() {
+  const a = state.answers;
+  const isE = state.path === 'entrepreneur';
+
+  const userContent = isE
+    ? `Biznesa ideja: ${a.idea}\nMērķauditorija: ${a.audience}\nTestēts ar klientiem: ${a.tested}\nKonkurenti: ${a.competitors}\nBudžets: ${a.budget}`
+    : `Uzņēmums: ${a.business}\nIzaugsmes šķēršļi: ${a.barriers}\nTirgi: ${a.markets}\nPaplašināšanās: ${a.expansion}\nApgrozījums: ${a.revenue}`;
+
+  const systemPrompt = isE
+    ? `Tu esi Marketworks biznesa analītiķis — Latvijā bāzēts biznesa validācijas pakalpojums. Analizē uzņēmēja biznesa ideju un sniedz godīgu, konstruktīvu novērtējumu latviešu valodā. Atbildi TIKAI ar derīgu JSON bez papildteksta vai markdown:\n{"score":<1-100>,"verdict":"<Ļoti spēcīgs|Perspektīvs|Risks ir augsts>","insights":[{"title":"...","description":"...","nextStep":"..."},{"title":"...","description":"...","nextStep":"..."},{"title":"...","description":"...","nextStep":"..."}],"recommendation":"<2-3 teikumi par to kāpēc idejas validācija ar reāliem tirgus datiem ir nākamais loģiskais solis>","hook":"<īss pārliecinošs CTA teksts pogai uz €99 validāciju>"}`
+    : `Tu esi Marketworks biznesa stratēģijas analītiķis — Latvijā bāzēts izaugsmes konsultants. Analizē uzņēmuma situāciju latviešu valodā. Atbildi TIKAI ar derīgu JSON bez papildteksta vai markdown:\n{"score":<1-100>,"verdict":"<Augsts potenciāls|Neizmantots potenciāls|Stagnācijas risks>","insights":[{"title":"...","description":"...","nextStep":"..."},{"title":"...","description":"...","nextStep":"..."},{"title":"...","description":"...","nextStep":"..."}],"recommendation":"<2-3 teikumi par to kāpēc padziļināta tirgus analīze un izaugsmes stratēģija ir nepieciešama tieši tagad>","hook":"<īss pārliecinošs CTA teksts pogai uz €299 stratēģiju>"}`;
+
+  try {
+    const resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role:'user', content: userContent }],
+      }),
+    });
+    if (!resp.ok) throw new Error('API ' + resp.status);
+    const data = await resp.json();
+    const raw = data.content.map(b => b.text||'').join('');
+    const result = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    renderResults(result);
+  } catch(e) {
+    console.error(e);
+    renderError();
+  }
+}
+
+function renderResults(r) {
+  const score = Math.max(1, Math.min(100, r.score));
+  const C = 2 * Math.PI * 58;
+  const offset = C - (score / 100) * C;
+  const vc = score >= 70 ? 'verdict-high' : score >= 40 ? 'verdict-mid' : 'verdict-low';
+
+  const insightsHtml = r.insights.map((ins,i) => `
+    <div class="insight-card">
+      <div class="insight-header">
+        <div class="insight-num">${i+1}</div>
+        <div class="insight-name">${ins.title}</div>
+      </div>
+      <div class="insight-desc">${ins.description}</div>
+      <div class="insight-step">${ins.nextStep}</div>
+    </div>`).join('');
+
+  set(`
+    <svg width="0" height="0" style="position:absolute">
+      <defs>
+        <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#7C3AED"/>
+          <stop offset="100%" stop-color="#A78BFA"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="score-wrap">
+      <div class="step-label">Tavs rezultāts</div>
+      <div class="score-ring-wrap">
+        <svg class="score-ring" viewBox="0 0 136 136">
+          <circle class="score-ring-bg" cx="68" cy="68" r="58"/>
+          <circle class="score-ring-fill" cx="68" cy="68" r="58"
+            id="ringFill"
+            stroke-dasharray="${C}"
+            stroke-dashoffset="${C}"/>
+        </svg>
+        <div class="score-number" id="scoreNum">0</div>
+      </div>
+      <div class="score-sub">no 100</div>
+      <div class="score-verdict ${vc}">${r.verdict}</div>
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">3 Galvenie ieskati</div>
+    ${insightsHtml}
+    <div class="rec-card">
+      <div class="rec-label">Marketworks Rekomendācija</div>
+      <div class="rec-text">${r.recommendation}</div>
+      <a class="rec-cta" href="https://marketworkslatvia.wixsite.com/marketworks" target="_blank">${r.hook} →</a>
+    </div>
+    <div class="btn-row" style="margin-top:1.5rem">
+      <button class="btn btn-ghost" onclick="restart()">Sākt no jauna</button>
+    </div>
+  `);
+
+  requestAnimationFrame(() => {
+    const fill = document.getElementById('ringFill');
+    const numEl = document.getElementById('scoreNum');
+    if (fill) fill.style.strokeDashoffset = offset;
+    let cur = 0; const inc = score / 60;
+    const t = setInterval(() => {
+      cur = Math.min(cur + inc, score);
+      if (numEl) numEl.textContent = Math.round(cur);
+      if (cur >= score) clearInterval(t);
+    }, 16);
+  });
+}
+
+function renderError() {
+  set(`
+    <div style="text-align:center;padding:1.5rem 0">
+      <div style="font-size:2rem;margin-bottom:1rem">⚠️</div>
+      <h1 style="font-size:1.3rem;margin-bottom:0.75rem">Kaut kas nogāja greizi</h1>
+      <p style="color:var(--text-muted);font-size:0.87rem;margin-bottom:1.5rem;line-height:1.6">
+        Pārliecinies, ka API atslēga ir konfigurēta, un mēģini vēlreiz.
+      </p>
+      <div class="btn-row" style="max-width:280px;margin:0 auto">
+        <button class="btn btn-primary" onclick="renderLoading();callAPI()">Mēģināt vēlreiz</button>
+        <button class="btn btn-ghost" onclick="restart()">Sākt no jauna</button>
+      </div>
+    </div>
+  `);
+}
+
+function restart() {
+  state.path = null; state.step = 0; state.answers = {}; state.email = '';
+  renderIntro();
+}
+
+renderIntro();
+</script>
+</body>
+</html>
