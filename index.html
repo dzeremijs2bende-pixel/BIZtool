@@ -410,7 +410,11 @@ async function callAPI() {
   try {
     const resp = await fetch(API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      'x-api-key': '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',
+       'anthropic-version': '2023-06-01',
+        },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 1000,
