@@ -424,7 +424,8 @@ async function callAPI() {
     });
     if (!resp.ok) throw new Error('API ' + resp.status);
     const data = await resp.json();
-    const raw = data.content.map(b => b.text||'').join('');
+    if (data.error) throw new Error(data.error.message);
+const raw = data.content.map(b => b.text||'').join('');
     const result = JSON.parse(raw.replace(/```json|```/g,'').trim());
     renderResults(result);
   } catch(e) {
